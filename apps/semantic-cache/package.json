@@ -18,7 +18,7 @@
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.4.1",
-    "@cloudflare/workers-types": "^4.20240603.0",
+    "@cloudflare/workers-types": "^4.20241112.0",
     "@types/node": "^20.14.9",
     "@ghost/tsconfig": "workspace:^",
     "dotenv": "^16.4.5",
