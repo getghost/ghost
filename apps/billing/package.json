@@ -1,0 +1,49 @@
+{
+  "name": "billing",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "pnpm dlx trigger.dev@latest dev",
+    "db:push": "dotenv -e .env drizzle-kit push",
+    "db:studio": "dotenv -e .env drizzle-kit studio --verbose",
+    "db:generate": "dotenv -e .env drizzle-kit generate",
+    "db:migrate": "dotenv -e .env drizzle-kit migrate",
+    "db:pull": "dotenv -e .env drizzle-kit pull"
+  },
+  "keywords": [],
+  "author": "Developers",
+  "license": "ISC",
+  "dependencies": {
+    "@agentic/serper": "^7.0.0",
+    "@ai-sdk/openai": "^0.0.63",
+    "@clerk/nextjs": "^4.29.10",
+    "@mendable/firecrawl-js": "^1.5.2",
+    "@octokit/rest": "^21.0.2",
+    "@planetscale/database": "^1.16.0",
+    "@trigger.dev/nextjs": "3.1.2",
+    "@trigger.dev/sdk": "3.1.2",
+    "@trigger.dev/slack": "3.1.2",
+    "@ghost/billing": "workspace:^",
+    "@ghost/clickhouse": "workspace:^",
+    "@ghost/db": "workspace:^",
+    "@ghost/error": "workspace:^",
+    "@ghost/id": "workspace:^",
+    "@ghost/resend": "workspace:^",
+    "@ghost/schema": "workspace:^",
+    "ai": "^3.4.7",
+    "drizzle-orm": "^0.33.0",
+    "drizzle-zod": "^0.5.1",
+    "react-dom": "^18",
+    "stripe": "^14.23.0",
+    "zod": "^3.23.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.0",
+    "drizzle-kit": "^0.24.2",
+    "typescript": "^5.5.3"
+  }
+}

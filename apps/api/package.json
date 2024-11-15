@@ -1,0 +1,45 @@
+{
+  "name": "api",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "deploy": "pnpm build && wrangler deploy",
+    "dev": "wrangler dev",
+    "test": "vitest run -c vitest.unit.ts",
+    "test:integration": "vitest run -c vitest.integration.ts --bail=1",
+    "test:benchmark": "vitest run -c vitest.benchmark.ts"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.4.1",
+    "@cloudflare/workers-types": "^4.20240603.0",
+    "@ghost/api": "workspace:^",
+    "@ghost/tsconfig": "workspace:^",
+    "@vitest/ui": "^1.6.0",
+    "typescript": "^5.5.3",
+    "vitest": "^1.6.0",
+    "wrangler": "^3.80.5"
+  },
+  "dependencies": {
+    "@axiomhq/js": "1.0.0-rc.2",
+    "@hono/zod-openapi": "^0.11.0",
+    "@hono/zod-validator": "^0.2.1",
+    "@planetscale/database": "^1.16.0",
+    "@ghost/cache": "workspace:^",
+    "@ghost/clickhouse": "workspace:^",
+    "@ghost/db": "workspace:^",
+    "@ghost/encryption": "workspace:^",
+    "@ghost/error": "workspace:^",
+    "@ghost/hash": "workspace:^",
+    "@ghost/id": "workspace:^",
+    "@ghost/keys": "workspace:^",
+    "@ghost/logs": "workspace:^",
+    "@ghost/metrics": "workspace:^",
+    "@ghost/rbac": "workspace:^",
+    "@ghost/schema": "workspace:^",
+    "@ghost/worker-logging": "workspace:^",
+    "hono": "^4.6.3",
+    "superjson": "^2.2.1",
+    "zod": "^3.23.5"
+  }
+}

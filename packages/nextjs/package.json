@@ -1,0 +1,30 @@
+{
+  "name": "@ghost/nextjs",
+  "version": "0.18.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "license": "MIT",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": ["ghost", "client", "api"],
+  "bugs": {
+    "url": "https://github.com/getghost/ghost/issues"
+  },
+  "homepage": "https://github.com/getghost/ghost#readme",
+  "files": ["./dist/**", "README.md"],
+  "author": "Developers <developers@digi-trans.org>",
+  "scripts": {
+    "build": "tsup"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "next": "^14.2.10",
+    "tsup": "^8.0.2",
+    "typescript": "^5.5.3"
+  },
+  "dependencies": {
+    "@ghost/api": "workspace:^"
+  }
+}

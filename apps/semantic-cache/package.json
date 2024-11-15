@@ -1,0 +1,45 @@
+{
+  "name": "@ghost/semantic-cache",
+  "version": "1.0.8",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "license": "AGPL-3.0-only",
+  "private": true,
+  "keywords": ["ghost", "semantic", "cache", "ai"],
+  "bugs": {
+    "url": "https://github.com/getghost/ghost/issues"
+  },
+  "homepage": "https://github.com/getghost/ghost#readme",
+  "files": ["./dist/**"],
+  "author": "Dominic Eccleston domeccleston@gmail.com",
+  "scripts": {
+    "build": "tsc",
+    "dev": "wrangler dev src/worker.ts --remote"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.4.1",
+    "@cloudflare/workers-types": "^4.20240603.0",
+    "@types/node": "^20.14.9",
+    "@ghost/tsconfig": "workspace:^",
+    "dotenv": "^16.4.5",
+    "typescript": "^5.5.3",
+    "wrangler": "^3.80.5"
+  },
+  "dependencies": {
+    "@planetscale/database": "^1.16.0",
+    "@ghost/cache": "workspace:^",
+    "@ghost/db": "workspace:^",
+    "@ghost/error": "workspace:^",
+    "@ghost/hash": "workspace:^",
+    "@ghost/id": "workspace:^",
+    "@ghost/logs": "workspace:^",
+    "@ghost/metrics": "workspace:^",
+    "@ghost/worker-logging": "workspace:^",
+    "ai": "^3.0.23",
+    "drizzle-orm": "generated",
+    "hono": "^4.6.3",
+    "openai": "^4.52.1",
+    "superjson": "^2.2.1",
+    "zod": "^3.23.5"
+  }
+}

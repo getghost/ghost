@@ -1,0 +1,167 @@
+name: ghost
+
+services:
+  mysql:
+    container_name: mysql
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ghost
+      MYSQL_USER: ghost
+      MYSQL_PASSWORD: password
+    command: ["--max_connections=1000"]
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql:/var/lib/mysql
+  planetscale:
+    container_name: planetscale
+    image: ghcr.io/mattrobenolt/ps-http-sim:latest
+    command:
+      [
+        "-listen-port=3900",
+        "-mysql-dbname=ghost",
+        "-mysql-addr=mysql",
+        "-mysql-max-rows=100000",
+        "-mysql-idle-timeout=1s",
+      ]
+    depends_on:
+      - mysql
+    ports:
+      - 3900:3900
+
+  agent:
+    deploy:
+      replicas: 3
+      endpoint_mode: vip
+
+    command:  [ "/usr/local/bin/ghost", "agent", "--config", "config.docker.json"]
+    build:
+      context: ../apps/agent
+      dockerfile: ./Dockerfile
+    depends_on:
+      - s3
+      - clickhouse
+    environment:
+      PORT: 8080
+      SERF_PORT: 9090
+      RPC_PORT: 9095
+      AUTH_TOKEN: "agent-auth-secret"
+      VAULT_S3_URL: "http://s3:3902"
+      VAULT_S3_BUCKET: "vault"
+      VAULT_S3_ACCESS_KEY_ID: "minio_root_user"
+      VAULT_S3_ACCESS_KEY_SECRET: "minio_root_password"
+      VAULT_MASTER_KEYS: "Ch9rZWtfMmdqMFBJdVhac1NSa0ZhNE5mOWlLSnBHenFPENTt7an5MRogENt9Si6wms4pQ2XIvqNSIgNpaBenJmXgcInhu6Nfv2U="
+      TINYBIRD_TOKEN: "I can't wait until we use clickhouse for local development"
+      CLICKHOUSE_URL: "clickhouse://default:password@clickhouse:9000"
+
+
+  agent_lb:
+    container_name: agent_lb
+    image: nginx:latest
+    volumes:
+      - ./nginx.agent.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - agent
+    ports:
+      - 8080:8080
+
+
+  clickhouse:
+    image: bitnami/clickhouse:latest
+    container_name: clickhouse
+    environment:
+      CLICKHOUSE_ADMIN_USER: default
+      CLICKHOUSE_ADMIN_PASSWORD: password
+    ports:
+      - '8123:8123'
+      - '9000:9000'
+    volumes:
+      - clickhouse:/bitnami/clickhouse
+
+  clickhouse_migrator:
+    build:
+      context: ../internal/clickhouse
+      dockerfile: ./Dockerfile
+    depends_on:
+      - clickhouse
+
+  s3:
+    container_name: s3
+    image: bitnami/minio:latest
+    ports:
+      - 3902:3902
+      - 2903:2903
+    environment:
+      MINIO_ROOT_USER: minio_root_user
+      MINIO_ROOT_PASSWORD: minio_root_password
+      MINIO_API_PORT_NUMBER: 3902
+      MINIO_CONSOLE_PORT_NUMBER: 3903
+    volumes:
+      - s3:/data
+
+
+  api:
+    # deploy:
+    #   replicas: 3
+    #   endpoint_mode: vip
+    build:
+      context: ..
+      dockerfile: ./apps/api/Dockerfile.dev
+    ports:
+      - 8787:8787
+    command:
+      [
+        "pnpm",
+        "wrangler",
+        "dev",
+        "--ip=0.0.0.0",
+        "--var=VERSION:1",
+        "--var=DATABASE_HOST:planetscale:3900",
+        "--var=DATABASE_USERNAME:ghost",
+        "--var=DATABASE_PASSWORD:password",
+        "--var=AGENT_URL:http://agent_lb:8080",
+        "--var=AGENT_TOKEN:agent-auth-secret",
+        "--var=EMIT_METRICS_LOGS:false",
+        "--var=SYNC_RATELIMIT_ON_NO_DATA:1.0",
+        "--var=CLICKHOUSE_URL:http://default:password@clickhouse:8123",
+
+      ]
+
+    depends_on:
+      - planetscale
+      - agent_lb
+      - clickhouse
+
+  prometheus:
+      image: prom/prometheus
+      container_name: prometheus
+      command:
+        - '--config.file=/etc/prometheus/prometheus.yaml'
+      ports:
+        - 9090:9090
+      restart: unless-stopped
+      volumes:
+        - ./prometheus:/etc/prometheus
+        - prometheus:/prometheus
+
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - 4000:3000
+    restart: unless-stopped
+    environment:
+          - GF_SECURITY_ADMIN_USER=admin
+          - GF_SECURITY_ADMIN_PASSWORD=grafana
+    volumes:
+      - ./grafana:/etc/grafana/provisioning/datasources
+volumes:
+  mysql:
+  grafana:
+  clickhouse:
+  clickhouse-keeper:
+  s3:
+  prometheus:

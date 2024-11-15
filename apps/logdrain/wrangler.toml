@@ -1,0 +1,11 @@
+name = "logdrain"
+main = "src/worker.ts"
+compatibility_date = "2024-01-17"
+
+node_compat = true
+
+
+routes = [
+ { pattern = "logdrain.ghost.dev", custom_domain = true},
+ { pattern = "logdrain.ghost.cloud", custom_domain = true}
+]

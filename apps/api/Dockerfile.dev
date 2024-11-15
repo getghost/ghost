@@ -1,0 +1,39 @@
+FROM node:lts AS base
+
+RUN npm i -g pnpm turbo
+RUN corepack enable
+
+
+FROM base AS builder
+
+# Set working directory
+WORKDIR /ghost
+
+COPY . .
+RUN turbo prune api --docker
+
+# Add lockfile and package.json's of isolated subworkspace
+FROM base AS installer
+WORKDIR /ghost
+
+# First install dependencies (as they change less often)
+COPY .gitignore .gitignore
+COPY --from=builder /ghost/out/json/ .
+COPY --from=builder /ghost/out/pnpm-lock.yaml ./pnpm-lock.yaml
+RUN pnpm install
+
+# Build the project and its dependencies
+COPY --from=builder /ghost/out/full/ .
+COPY turbo.json turbo.json
+
+RUN pnpm turbo build --filter=api...
+
+FROM base AS runner
+WORKDIR /ghost
+
+COPY --from=installer /ghost .
+
+WORKDIR /ghost/apps/api
+ENV WRANGLER_SEND_METRICS=false
+RUN rm .dev.vars || true
+CMD pnpm wrangler dev 

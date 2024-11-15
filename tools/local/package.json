@@ -1,0 +1,24 @@
+{
+  "name": "@ghost/local",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "local": "tsx ./src/main.ts",
+    "seed": "tsx ./src/seed.ts"
+  },
+  "keywords": [],
+  "author": "Developers",
+  "license": "AGPL-3.0",
+  "devDependencies": {
+    "@clack/prompts": "^0.7.0",
+    "@ghost/db": "workspace:^",
+    "@ghost/id": "workspace:^",
+    "@ghost/tsconfig": "workspace:^",
+    "mysql2": "^3.10.3",
+    "tsx": "^4.19.1"
+  },
+  "dependencies": {
+    "execa": "^9.3.0"
+  }
+}

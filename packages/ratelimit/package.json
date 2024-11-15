@@ -1,0 +1,31 @@
+{
+  "name": "@ghost/ratelimit",
+  "version": "0.4.5",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "license": "MIT",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": ["ghost", "ratelimit", "global", "serverless"],
+  "bugs": {
+    "url": "https://github.com/getghost/ghost/issues"
+  },
+  "homepage": "https://github.com/getghost/ghost#readme",
+  "files": ["./dist/**", "README.md"],
+  "author": "Developers <andreas@ghost.dev>",
+  "scripts": {
+    "build": "tsup"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "@ghost/tsconfig": "workspace:^",
+    "tsup": "^8.0.2",
+    "typescript": "^5.5.3"
+  },
+  "dependencies": {
+    "@ghost/api": "workspace:^"
+  }
+}

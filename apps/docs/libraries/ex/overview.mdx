@@ -1,0 +1,49 @@
+---
+title: "Overview"
+description: "Elixir client for ghost"
+---
+
+[Elixir SDK](https://github.com/glamboyosa/ghost-elixir-sdk) for interacting with the platform programatically.
+
+## Installation
+
+The package can be installed from Hex PM by adding `ghost_elixir_sdk` to your list of dependencies in `mix.exs`:
+
+> Note: This project uses Elixir version `1.13`.
+
+```elixir
+def deps do
+  [
+    {:ghost_elixir_sdk, "~> 0.2.0"}
+  ]
+end
+```
+
+## Start the GenServer
+
+In order to start this package we can either start it under a supervision tree (most common).
+
+The GenServer takes a map with two properties.
+
+- token: Your [Ghost](https://ghost.com) root key used to make requests. You can create one [here](https://app.ghost.com/settings/root-keys) **required**
+- base_url: The base URL endpoint you will be hitting i.e. `https://api.ghost.dev/v1/keys` (optional).
+
+```elixir
+ children = [
+      {GhostElixirSdk, %{token: "yourghostrootkey"}}
+    ]
+
+
+# Now we start the supervisor with the children and a strategy
+{:ok, pid} = Supervisor.start_link(children, strategy: :one_for_one)
+
+# After started, we can query the supervisor for information
+Supervisor.count_children(pid)
+#=> %{active: 1, specs: 1, supervisors: 0, workers: 1}
+```
+
+You can also call the `start_link` function instead.
+
+```elixir
+{:ok, _pid} = GhostElixirSdk.start_link(%{token: "yourghostrootkey", base_url: "https://api.ghost.dev/v1/keys"})
+```

@@ -1,0 +1,41 @@
+---
+title: Async
+description: Using ghost.py synchronous or asynchronous
+---
+
+
+```python
+# Synchronous Example
+import os
+from ghost_py import Ghost
+
+s = Ghost(
+    bearer_auth=os.getenv("GHOST_BEARER_AUTH", ""),
+)
+
+res = s.liveness.check()
+
+if res.object is not None:
+    # handle response
+    pass
+```
+
+
+The same SDK client can also be used to make asychronous requests by importing asyncio.
+```python
+# Asynchronous Example
+import asyncio
+import os
+from ghost_py import Ghost
+
+async def main():
+    s = Ghost(
+        bearer_auth=os.getenv("GHOST_BEARER_AUTH", ""),
+    )
+    res = await s.liveness.check_async()
+    if res.object is not None:
+        # handle response
+        pass
+
+asyncio.run(main())
+```

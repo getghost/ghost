@@ -1,0 +1,33 @@
+config:
+  target: https://bounce.ghost.workers.dev
+  phases:
+    - name: Ramp
+      duration: 5m
+      arrivalRate: 10
+          
+
+plugins:
+    ensure: {}
+    expect: {}
+    apdex: {}
+
+scenarios:
+  - flow:
+    - post:
+        # url: "/ratelimit.v1.RatelimitService/Ratelimit"
+        url: "/vault.v1.VaultService/Encrypt"
+        method: "POST"
+        headers:
+          "Content-Type": "application/json"
+          "Authorization": "Bearer {{ $env.AGENT_AUTH_TOKEN}}"
+        json:
+          identifier: "test"
+          limit: 10
+          duration: 60000
+        capture:
+          - json: "$.success"
+            as: success
+        expect:
+          - statusCode: 200
+         
+      

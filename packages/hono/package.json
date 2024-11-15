@@ -1,0 +1,36 @@
+{
+  "name": "@ghost/hono",
+  "version": "1.4.7",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "license": "MIT",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": ["ghost", "client", "api", "hono"],
+  "bugs": {
+    "url": "https://github.com/getghost/ghost/issues"
+  },
+  "homepage": "https://github.com/getghost/ghost#readme",
+  "files": ["./dist/**"],
+  "author": "Developers <developers@digi-trans.org>",
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "hono": "^4.6.3",
+    "msw": "^2.2.13",
+    "tsup": "^8.0.2",
+    "typescript": "^5.5.3",
+    "zod": "^3.23.5"
+  },
+  "dependencies": {
+    "@ghost/api": "workspace:^"
+  },
+  "peerDependencies": {
+    "hono": "^4.6.3"
+  }
+}

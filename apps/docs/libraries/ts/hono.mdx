@@ -1,0 +1,171 @@
+---
+title: "@ghost/hono"
+description: "Hono.js middleware for authenticating API keys"
+---
+
+> Hono - [炎] means flame🔥 in Japanese - is a small, simple, and ultrafast web framework for the Edges. It works on any JavaScript runtime: Cloudflare Workers, Fastly Compute@Edge, Deno, Bun, Vercel, Netlify, Lagon, AWS Lambda, Lambda@Edge, and Node.js.
+
+`@ghost/hono` offers a middleware for authenticating API keys with [ghost](https://ghost.com).
+
+
+<Card icon="github" title="github.com/getghost/ghost/tree/main/packages/hono" href="https://github.com/getghost/ghost/tree/main/packages/hono"/>
+
+
+## Install
+
+<Tabs>
+  <Tab title="npm">
+  ```bash
+   npm install @ghost/hono
+   ```
+  </Tab>
+  <Tab title="pnpm">
+  ```bash
+   pnpm add @ghost/hono
+   ```
+  </Tab>
+  <Tab title="yarn">
+  ```bash
+   yarn add @ghost/hono
+   ```
+  </Tab>
+  <Tab title="bun">
+    ```bash
+    bun install @ghost/hono
+    ```
+  </Tab>
+</Tabs>
+
+Let's dive straight in. The minimal setup looks like this. All you need is your api id. Go to [/app/api](https://app.ghost.com/apis), select your API and copy the id.
+
+By default it tries to grab the api key from the `Authorization` header and then verifies it with ghost.
+The result of the verification will be written to the context and can be access with `c.get("ghost")`.
+
+```ts
+import { Hono } from "hono"
+import { type GhostContext, ghost } from "@ghost/hono";
+
+const app = new Hono<{ Variables: { ghost: GhostContext } }>();
+
+app.use("*", ghost({
+  apiId: "<GHOST_API_ID>"
+}));
+
+
+app.get("/somewhere", (c) => {
+  // access the ghost response here to get metadata of the key etc
+  const ... = c.get("ghost")
+
+  return c.text("yo")
+})
+```
+
+## Customizing the middleware
+
+
+
+### Header
+
+By default the middleware tries to grab the api key from the `Authorization` header. You can change this by passing a custom header name to the middleware.
+
+```ts
+app.use(
+  "*",
+  ghost({
+    getKey: (c) => c.req.header("x-api-key"),
+  })
+);
+```
+
+If the header is missing the middleware will return a `401` error response like this
+
+```ts
+c.json({ error: "unauthorized" }, { status: 401 });
+```
+
+To customize the response in case the header is missing, just return a response from the `getKey` function.
+
+```ts
+app.use(
+  "*",
+  ghost({
+    getKey: (c) => {
+      const key = c.req.header("x-api-key");
+      if (!key) {
+        return c.text("missing api key", 401);
+      }
+      return key;
+    },
+  })
+);
+```
+
+### Handle errors
+
+If omited, the middleware will throw an `HTTPException` like hono [recommends](https://hono.dev/api/exception)
+
+To handle errors globally you can pass an `onError` handler to the middleware.
+The handler will be called with the context and the error.
+
+<Expandable title="GhostError">
+  <ResponseField name="code" type="string" required>
+    The machine readable error code
+  </ResponseField>
+  <ResponseField name="docs" type="string" required>
+    A link to the docs to read more about this error type.
+  </ResponseField>
+  <ResponseField name="message" type="string" required>
+    A human readable message to help debugging the error.
+  </ResponseField>
+  <ResponseField name="requestId" type="string" required>
+    A trace id useful to debug it on Ghost's side, please provide this to
+    support if you need help.
+  </ResponseField>
+</Expandable>
+
+```ts
+app.use(
+  "*",
+  ghost({
+    onError: (c, err) => {
+      // handle error
+      return c.text("unauthorized", 401);
+    },
+  })
+);
+```
+
+### Handle invalid keys
+
+By default the middleware will not do anything with the verification response other than writing it to the context.
+However you most likely would like to just return a `401` response if the key is invalid and not continue with the request.
+
+To do this you can pass a `handleInvalidKey` handler to the middleware.
+See [here](/libraries/ts/sdk/keys/verify#response) for the full `result` object.
+
+```ts
+app.use(
+  "*",
+  ghost({
+    handleInvalidKey: (c, result) => {
+      return c.json({
+          error: "unauthorized",
+          reason: result.code,
+        }, 401);
+    },
+  })
+);
+```
+
+### Disable telemetry
+
+By default, Ghost collects anonymous telemetry data to help us understand how our SDKs are used.
+
+If you wish to disable this, you can do so by passing a boolean flag to the constructor:
+
+```ts
+app.use(
+  "*",
+  ghost({ disableTelemetry: true })
+)
+```
